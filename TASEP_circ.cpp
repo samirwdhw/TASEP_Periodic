@@ -8,7 +8,8 @@ using namespace std;
 #define P 0.1		//Probability of car moving
 #define T_MAX 10000	//To determine max number of moves
 #define CHECK_POINT 10 //Point where we check J
-
+#define N_RUNS 100		//To define number of runs to take avg
+#define FILE_NAME "results.dat"	//File to output data
 
 int track[N];   //To maintain the circular track 
 int list[N];		//To maintain where the 1's are
@@ -122,59 +123,57 @@ void move(int rho){
 	//cout<<"End here"<<endl;
 }
 	
-void print(int a[]) {
-
-	for(int i =0; i<N; i++){
-		cout<<a[i]<<endl;
-	}
-}
-
-void count_array(int a[]){
-
-	int c = 0;
-
-	for(int i = 0; i< N; i++) {
-
-		if(a[i] == 1){
-			c++;
-		}
-	}
-	cout<<c;
-}
 
 int main(){
 	
 	int rho; 			//density
+	float J_avg;	//To take average of many J's
 
 	ofstream f1;
-	f1.open("results.dat");
+	f1.open(FILE_NAME);
 
-	for(rho =  1; rho< N; rho++){ 		//Must go from 1 to N
 
-		initialize(track);
-		initialize(list);
+	for(rho =  0; rho<= N; rho++){ 		//Must go from 0 to N
 
-		fill(rho);
+		J_avg = 0;
 
-		//print(list);
+		for(int run = 0; run< N_RUNS; run++){
 
-		count = 0;				//for calculating J later
+			srand(run);
 
-		for(int t = 0; t< T_MAX; t++){		//change 1 to T_MAX
+			initialize(track);
+			initialize(list);
 
-			move(rho);
+			fill(rho);
+
+			//print(list);
+
+			count = 0;				//for calculating J later
+
+			for(int t = 0; t< T_MAX; t++){		//change 1 to T_MAX
+
+				move(rho);
+
+			}
+
+			float J = (float)(count)/T_MAX;
+		
+			J_avg += J;
+
+			//f1<<J<<endl;
 
 		}
 
-		float J = (float)(count)/T_MAX;
-		
-		f1<<J<<endl;
+		cout<<endl<<J_avg<<" "<<rho<<"/"<<endl;
+
+		f1<<J_avg/N_RUNS<<endl;
 
 	}
 
 	f1.close();
 
 	//print(list);
+
 
 	return 0;
 }
