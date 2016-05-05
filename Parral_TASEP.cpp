@@ -6,9 +6,10 @@ using namespace std;
 
 #define N 100		//To determine total size of circular track
 #define P 0.1		//Probability of car moving
-#define T_MAX 30000	//To determine max number of moves
+#define T_MAX 10000	//To determine max number of moves
 #define CHECK_POINT 10 //Point where we check J
-#define FILE_NAME "results(30).dat"	//Name of file where results are stored
+#define N_RUNS 100		//To define number of runs to take avg
+#define FILE_NAME "results2.dat"	//Name of file where results are stored
 
 int track[N];   //To maintain the circular track 
 int list[N];		//To maintain where the 1's are
@@ -101,80 +102,98 @@ void move(int rho){
 
 			int prob_check = rand();
 			
-			if( prob_check < RAND_MAX*P){
+			if( prob_check <= RAND_MAX*P){
 
-				moves.append(pos);
-			/*
-				track[pos] =  0;
-				track[next_pos] = 1;
+				moves.append(t);
 
-				if(pos == CHECK_POINT){
-					count++;
-				}
-
-				list[t] = next_pos;
-			*/
 			}
 
 			update.append(t);
 
 		}
 
-		for(int i = 0; i<moves.q; i++){
+	}
 
-			int pos = moves.a[i];
-			int next_pos = (pos+1)%N;
+	for(int i = 0; i<moves.q; i++){
 
-			track[pos] =  0;
-			track[next_pos] = 1;
+		int t = moves.a[i];
 
-			if(pos == CHECK_POINT){
-				count++;
-			}
+		int pos = list[t];
+		int next_pos = (pos+1)%N;
 
-			list[t] = next_pos;
+		track[pos] =  0;
+		track[next_pos] = 1;
 
+		if(pos == CHECK_POINT){
+			count++;
 		}
+
+		list[t] = next_pos;
 
 	}
 
 	//cout<<"End here"<<endl;
 }
-	
+
+void print(int a[]){
+
+	for(int i = 0; i< 10; i++){
+		cout<<a[i]<<endl;
+	}
+	cout<<"Done"<<endl;
+}	
+
 
 int main(){
 	
 	int rho; 			//density
+	float J_avg;	//To take average of many J's
 
 	ofstream f1;
 	f1.open(FILE_NAME);
 
+
 	for(rho =  0; rho<= N; rho++){ 		//Must go from 0 to N
 
-		initialize(track);
-		initialize(list);
+		J_avg = 0;
 
-		fill(rho);
+		for(int run = 0; run< N_RUNS; run++){
 
-		//print(list);
+			srand(run);
 
-		count = 0;				//for calculating J later
+			initialize(track);
+			initialize(list);
 
-		for(int t = 0; t< T_MAX; t++){		//change 1 to T_MAX
+			fill(rho);
 
-			move(rho);
+			//print(list);
+
+			count = 0;				//for calculating J later
+
+			for(int t = 0; t< T_MAX; t++){		//change 1 to T_MAX
+
+				move(rho);
+
+			}
+
+			float J = (float)(count)/T_MAX;
+		
+			J_avg += J;
+
+			//f1<<J<<endl;
 
 		}
 
-		float J = (float)(count)/T_MAX;
-		
-		f1<<J<<endl;
+		cout<<endl<<J_avg<<" "<<rho<<"/"<<endl;
+
+		f1<<J_avg/N_RUNS<<endl;
 
 	}
 
 	f1.close();
 
 	//print(list);
+
 
 	return 0;
 }
