@@ -11,7 +11,7 @@ using namespace std;
 #define P 0.5		//Probability of car moving
 #define T_MAX 10000	//To determine max number of moves
 #define CHECK_POINT 10 //Point where we check J
-#define N_RUNS 100		//To define number of runs to take avg
+#define N_RUNS 200		//To define number of runs to take avg
 #define FILE_NAME "results.dat"	//File to output data
 #define WARM_UP 1000	//Time for which warmup is assumed
 
@@ -164,7 +164,7 @@ int main(){
 
 		for(int run = 0; run< N_RUNS; run++){
 
-			srand(run);
+			//srand(run);
 
 			initialize(track);
 			initialize(list);
@@ -177,7 +177,7 @@ int main(){
 
 			for(int t = 0; t< T_MAX; t++){		//change 1 to T_MAX
 
-				move(rho);
+				move(rho, t);
 
 			}
 
